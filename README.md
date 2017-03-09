@@ -7,14 +7,14 @@ CLIs are awesome.  Most options libraries aren't.  `go-cli`
 doesn't attempt to change that, it just tries to focus on doing
 one thing well.
 
-Things you will not find in `go-cli`:
+Things you **will not** find in `go-cli`:
 
   - Magical bash/zsh Auto-completion support
   - Usage generation
   - Option help string
   - Option defaults
 
-Things you will find in `go0cli`:
+Things you **will** find in `go-cli`:
 
   - A dead-simple, tagged-struct approach to options
   - A rudimentary sub-command recognizer
