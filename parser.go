@@ -95,7 +95,7 @@ func (p *Parser) Next() bool {
 
 		} else if sub, ok := lvl.Subs[rest[0]]; ok {
 			lvl = sub
-			cmd = append(cmd, rest[0])
+			cmd = append(cmd, lvl.Command)
 
 		} else {
 			args = append(args, rest[0])

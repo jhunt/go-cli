@@ -85,7 +85,7 @@ type Options struct {
   List struct {
     LongForm   bool     `cli:"-l, --long"`
     All        bool     `cli:"-a, --all"`
-  } `cli:"list"`
+  } `cli:"list, ls"`
 
   Create struct {
     Archive    string   `cli:"-a, "--archive"`
@@ -107,6 +107,7 @@ The up-shot of this is that a user of your CLI can do this:
 ```
 $ ./foo -h
 $ ./foo list -h
+$ ./foo ls -h
 $ ./foo list -h --all
 $ ./foo -h list -h --all -h
 ```
@@ -167,7 +168,7 @@ that sub-command.  This mimics how normal shells operate.  Running
 sub-command runs with the `--if-missing` option set to true, but
 that doesn't affect the first `set` (nor any future `set`s).
 
-Similarly, overwriding a global option for a sub-command _only
+Similarly, overriding a global option for a sub-command _only
 persists for the scope of that sub-command_.
 
 The idiom for supporting chained sub-command calls is short and
@@ -203,9 +204,11 @@ Once it runs out of chained sub-commands, or encounters an error,
 it returns false.
 
 Inside the body of the loop, you can access `p.Command` to get the
-full, space-separated name of the sub-command to run.  `p.Args`
-will give you the list of positional arguments, in the order they
-were specified, with all of the `-s` and `--style` flags removed.
+full, space-separated name of the sub-command to run.  Aliases
+(i.e. 'ls' in `cli:"list, ls"`) will be resolved to the first name
+in the tag list (here, "list"). `p.Args` will give you the list of
+positional arguments, in the order they were specified, with all
+of the `-s` and `--style` flags removed.
 
 Note that any changes you make to the option structure between
 subsequent calls to `Next()` will be lost by virtue of the

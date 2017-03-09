@@ -851,6 +851,50 @@ var _ = Describe("CLI", func() {
 	})
 
 	// }}}
+	Describe("Sub-command aliasing", func() { // {{{
+		var opt = struct {
+			Help bool `cli:"-h, -?, --help"`
+
+			List struct {
+				All bool `cli:"--all"`
+			} `cli:"list, ls"`
+		}{}
+
+		BeforeEach(func() {
+			var (
+				dBool bool
+			)
+
+			opt.Help = dBool
+			opt.List.All = dBool
+		})
+
+		It("Handles the first alias", func() {
+			cmd, leftover, err = cli.ParseArgs(&opt, ll("list", "--all"))
+			Ω(err).ShouldNot(HaveOccurred())
+
+			Ω(cmd).Should(Equal("list"))
+
+			Ω(leftover).Should(BeEmpty())
+
+			Ω(opt.Help).Should(BeFalse())
+			Ω(opt.List.All).Should(BeTrue())
+		})
+
+		It("Treats the first alias as the canonical alias", func() {
+			cmd, leftover, err = cli.ParseArgs(&opt, ll("ls", "--all"))
+			Ω(err).ShouldNot(HaveOccurred())
+
+			Ω(cmd).Should(Equal("list"))
+
+			Ω(leftover).Should(BeEmpty())
+
+			Ω(opt.Help).Should(BeFalse())
+			Ω(opt.List.All).Should(BeTrue())
+		})
+	})
+
+	// }}}
 	Describe("Unrecognized arguments", func() { // {{{
 		var opt = struct {
 			Help bool `cli:"-h, -?, --help"`

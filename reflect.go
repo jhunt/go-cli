@@ -66,7 +66,13 @@ func reflectSomeMore(c context, t reflect.Type, v *reflect.Value) (context, erro
 			if err != nil {
 				return c, err
 			}
-			c.Subs[tag] = sub
+
+			for _, cmd := range regexp.MustCompile(" *, *").Split(tag, -1) {
+				if sub.Command == "" {
+					sub.Command = cmd
+				}
+				c.Subs[cmd] = sub
+			}
 			break
 
 		default:

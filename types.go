@@ -16,6 +16,7 @@ type option struct {
 }
 
 type context struct {
+	Command string /* canonical name */
 	Options []option
 	Subs    map[string]context
 }
