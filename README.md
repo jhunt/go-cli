@@ -36,7 +36,7 @@ import (
 type Options struct {
   Help     bool   `cli:"-h, --help"`
   Version  bool   `cli:"-v, --version"`
-  Insecure bool   `cli:"-k, --insecure"`
+  Insecure bool   `cli:"-k, --insecure, --no-insecure"`
   URL      string `cli:"-U, --url"`
 
   Gen struct {
@@ -132,6 +132,86 @@ $ ./foo -a list                 # this is bad
 So, without any ambiguity, `go-cli` is perfectly happy to let you
 overload the meaning of `-a`.  Whether you _should_, is entirely
 up to you.
+
+Chained Commands
+================
+
+A curiously powerful command-line paradigm involves abusing the
+`--` signifier to _chain commands_.  That is, within a single
+executed process, do a whole bunch of sub-commands, like this:
+
+```
+$ ./cli -t prod --format silent -k \
+      set system.cores.available 4 \
+   -- set system.cores.usable 2 --if-missing \
+   -- build vm --name new-vm --ip 10.40.0.5/24 \
+   -- list --format fancy --all
+```
+
+`go-cli` tries very hard to make this style of CLI interaction
+both easy to program, and simple and unsurprising to use.  A few
+things to keep in mind:
+
+Global options specified before any sub-commands will be treated
+as truly global; every single sub-command will inherit the values
+set _globally_.  That's not to say each sub-command is stuck with
+what was specified at the global level.  Nope.  Sub-commands can
+provide their own values for global options.  The `list` command
+in the above example undoes the global `--format` with it's own
+definition as 'fancy'.
+
+Options set for a given sub-command only affect that instance of
+that sub-command.  This mimics how normal shells operate.  Running
+`ls -r` followed by an `rm` isn't going to magically cause your
+`rm` to become recursive.  In the example above, the second `set`
+sub-command runs with the `--if-missing` option set to true, but
+that doesn't affect the first `set` (nor any future `set`s).
+
+Similarly, overwriding a global option for a sub-command _only
+persists for the scope of that sub-command_.
+
+The idiom for supporting chained sub-command calls is short and
+sweet:
+
+```
+p, err := cli.NewParser(&opts, os.Args)
+if err != nil {
+  panic(err)
+}
+
+for p.Next() {
+  // dispatch on the value of p.Command and p.Args
+}
+
+if err = p.Error(); err != nil {
+  panic(err)
+}
+```
+
+Error checking is **very important** here; we check errors in two
+places: when we create the parser via `cli.NewParser()`, and once
+we stop processing chained commands.  The former region of code
+can error if global option parsing fails (unrecognized flag,
+missing value argument, etc).  The latter can fail if sub-command
+option parsing fails (unrecognized sub-command, bad flag, missing
+value, etc).  If you skip either case for error checking, you are
+doing your users a great disservice.
+
+The loop in the middle is the workhorse of the idiom.  `p.Next()`
+will return true as long as it finds the next sub-command to run.
+Once it runs out of chained sub-commands, or encounters an error,
+it returns false.
+
+Inside the body of the loop, you can access `p.Command` to get the
+full, space-separated name of the sub-command to run.  `p.Args`
+will give you the list of positional arguments, in the order they
+were specified, with all of the `-s` and `--style` flags removed.
+
+Note that any changes you make to the option structure between
+subsequent calls to `Next()` will be lost by virtue of the
+snapshotting / reset features that make this whole magic show
+work.  The same goes for changes between calling `NewParser()` and
+the first `Next()` call.
 
 Contributing
 ============

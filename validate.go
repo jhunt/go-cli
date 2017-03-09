@@ -1,13 +1,13 @@
 package cli
 
 import (
-	"strings"
 	"fmt"
+	"strings"
 )
 
 /* validateLevel checks to make sure there is no overlap between
    the given context and the short/long options seen at a higher level. */
-func validateLevel(c context, parents []string, shorts string, longs map[string] bool) error {
+func validateLevel(c context, parents []string, shorts string, longs map[string]bool) error {
 	where := "(at global level)"
 	if len(parents) > 0 {
 		where = fmt.Sprintf("(in `%s` sub-command)", strings.Join(parents, " "))
@@ -26,8 +26,8 @@ func validateLevel(c context, parents []string, shorts string, longs map[string]
 	}
 
 	for cmd, sub := range c.Subs {
-		copied := make(map[string] bool, len(longs))
-		for k,v := range longs {
+		copied := make(map[string]bool, len(longs))
+		for k, v := range longs {
 			copied[k] = v
 		}
 
@@ -40,5 +40,5 @@ func validateLevel(c context, parents []string, shorts string, longs map[string]
 }
 
 func validate(c context) error {
-	return validateLevel(c, make([]string, 0), "", make(map[string] bool))
+	return validateLevel(c, make([]string, 0), "", make(map[string]bool))
 }

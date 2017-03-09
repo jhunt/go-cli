@@ -1,10 +1,10 @@
 package cli_test
 
 import (
+	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"testing"
-	"fmt"
 
 	"github.com/jhunt/go-cli"
 )
@@ -355,6 +355,19 @@ var _ = Describe("CLI", func() {
 		})
 
 		Context("With overridden default values", func() {
+			var opt = struct {
+				Verify bool `cli:"-v, --verify, --no-verify"`
+			}{}
+
+			BeforeEach(func() {
+				opt.Verify = true
+			})
+
+			It("Handles --no-<option> boolean variation", func() {
+				_, _, err = cli.ParseArgs(&opt, ll("--no-verify"))
+				Ω(err).ShouldNot(HaveOccurred())
+				Ω(opt.Verify).Should(BeFalse())
+			})
 		})
 	})
 
@@ -576,7 +589,7 @@ var _ = Describe("CLI", func() {
 
 				Ω(err).ShouldNot(HaveOccurred())
 				Ω(cmd).Should(Equal(""))
-				Ω(leftover).Should(BeEmpty());
+				Ω(leftover).Should(BeEmpty())
 
 				Ω(opt.Int).Should(Equal(i))
 				Ω(opt.Int8).Should(Equal(i8))
@@ -612,97 +625,97 @@ var _ = Describe("CLI", func() {
 			}{}
 
 			It("Complains about non-numeric int value arguments", func() {
-				_, _, err = cli.ParseArgs(&opt, ll( "--int", "BAD"))
+				_, _, err = cli.ParseArgs(&opt, ll("--int", "BAD"))
 				Ω(opt.Int).Should(Equal(0))
 				Ω(err).Should(HaveOccurred())
 			})
 
 			It("Complains about non-numeric int value arguments (short)", func() {
-				_, _, err = cli.ParseArgs(&opt, ll( "-i", "BAD"))
+				_, _, err = cli.ParseArgs(&opt, ll("-i", "BAD"))
 				Ω(opt.Int).Should(Equal(0))
 				Ω(err).Should(HaveOccurred())
 			})
 
 			It("Complains about non-numeric int value arguments (short+bundled)", func() {
-				_, _, err = cli.ParseArgs(&opt, ll( "-iBAD"))
+				_, _, err = cli.ParseArgs(&opt, ll("-iBAD"))
 				Ω(opt.Int).Should(Equal(0))
 				Ω(err).Should(HaveOccurred())
 			})
 
 			It("Complains about non-numeric int8 value arguments", func() {
-				_, _, err = cli.ParseArgs(&opt, ll( "--int8", "BAD"))
+				_, _, err = cli.ParseArgs(&opt, ll("--int8", "BAD"))
 				Ω(opt.Int).Should(Equal(0))
 				Ω(err).Should(HaveOccurred())
 			})
 
 			It("Complains about non-numeric int16 value arguments", func() {
-				_, _, err = cli.ParseArgs(&opt, ll( "--int16", "BAD"))
+				_, _, err = cli.ParseArgs(&opt, ll("--int16", "BAD"))
 				Ω(opt.Int).Should(Equal(0))
 				Ω(err).Should(HaveOccurred())
 			})
 
 			It("Complains about non-numeric int32 value arguments", func() {
-				_, _, err = cli.ParseArgs(&opt, ll( "--int32", "BAD"))
+				_, _, err = cli.ParseArgs(&opt, ll("--int32", "BAD"))
 				Ω(opt.Int).Should(Equal(0))
 				Ω(err).Should(HaveOccurred())
 			})
 
 			It("Complains about non-numeric int64 value arguments", func() {
-				_, _, err = cli.ParseArgs(&opt, ll( "--int64", "BAD"))
+				_, _, err = cli.ParseArgs(&opt, ll("--int64", "BAD"))
 				Ω(opt.Int).Should(Equal(0))
 				Ω(err).Should(HaveOccurred())
 			})
 
 			It("Complains about non-numeric uint value arguments", func() {
-				_, _, err = cli.ParseArgs(&opt, ll( "--uint", "BAD"))
+				_, _, err = cli.ParseArgs(&opt, ll("--uint", "BAD"))
 				Ω(opt.Int).Should(Equal(0))
 				Ω(err).Should(HaveOccurred())
 			})
 
 			It("Complains about non-numeric uint value arguments (short)", func() {
-				_, _, err = cli.ParseArgs(&opt, ll( "-u", "BAD"))
+				_, _, err = cli.ParseArgs(&opt, ll("-u", "BAD"))
 				Ω(opt.Int).Should(Equal(0))
 				Ω(err).Should(HaveOccurred())
 			})
 
 			It("Complains about non-numeric uint value arguments (short+bundled)", func() {
-				_, _, err = cli.ParseArgs(&opt, ll( "-uBAD"))
+				_, _, err = cli.ParseArgs(&opt, ll("-uBAD"))
 				Ω(opt.Int).Should(Equal(0))
 				Ω(err).Should(HaveOccurred())
 			})
 
 			It("Complains about non-numeric uint8 value arguments", func() {
-				_, _, err = cli.ParseArgs(&opt, ll( "--uint8", "BAD"))
+				_, _, err = cli.ParseArgs(&opt, ll("--uint8", "BAD"))
 				Ω(opt.Int).Should(Equal(0))
 				Ω(err).Should(HaveOccurred())
 			})
 
 			It("Complains about non-numeric uint16 value arguments", func() {
-				_, _, err = cli.ParseArgs(&opt, ll( "--uint16", "BAD"))
+				_, _, err = cli.ParseArgs(&opt, ll("--uint16", "BAD"))
 				Ω(opt.Int).Should(Equal(0))
 				Ω(err).Should(HaveOccurred())
 			})
 
 			It("Complains about non-numeric int32 value arguments", func() {
-				_, _, err = cli.ParseArgs(&opt, ll( "--int32", "BAD"))
+				_, _, err = cli.ParseArgs(&opt, ll("--int32", "BAD"))
 				Ω(opt.Int).Should(Equal(0))
 				Ω(err).Should(HaveOccurred())
 			})
 
 			It("Complains about non-numeric uint64 value arguments", func() {
-				_, _, err = cli.ParseArgs(&opt, ll( "--uint64", "BAD"))
+				_, _, err = cli.ParseArgs(&opt, ll("--uint64", "BAD"))
 				Ω(opt.Int).Should(Equal(0))
 				Ω(err).Should(HaveOccurred())
 			})
 
 			It("Complains about non-numeric float32 value arguments", func() {
-				_, _, err = cli.ParseArgs(&opt, ll( "--float32", "BAD"))
+				_, _, err = cli.ParseArgs(&opt, ll("--float32", "BAD"))
 				Ω(opt.Int).Should(Equal(0))
 				Ω(err).Should(HaveOccurred())
 			})
 
 			It("Complains about non-numeric float64 value arguments", func() {
-				_, _, err = cli.ParseArgs(&opt, ll( "--float64", "BAD"))
+				_, _, err = cli.ParseArgs(&opt, ll("--float64", "BAD"))
 				Ω(opt.Int).Should(Equal(0))
 				Ω(err).Should(HaveOccurred())
 			})
@@ -1099,6 +1112,149 @@ var _ = Describe("CLI", func() {
 				Ω(err).Should(HaveOccurred())
 				Ω(err.Error()).Should(MatchRegexp("invalid.*---dashes-yo"))
 			})
+		})
+	})
+
+	// }}}
+	Describe("Chained Commands", func() { // {{{
+		var opt = struct {
+			Help     bool   `cli:"-h, -?, --help"`
+			Insecure bool   `cli:"-k, --insecure"`
+			Target   string `cli:"-t, --target"`
+
+			Sub struct {
+				Host string `cli:"-H, --host"`
+			} `cli:"sub"`
+
+			List struct {
+			} `cli:"list"`
+		}{}
+
+		BeforeEach(func() {
+			var (
+				b bool
+				s string
+			)
+			opt.Help = b
+			opt.Insecure = b
+			opt.Target = s
+			opt.Sub.Host = s
+		})
+
+		It("Works with no arguments", func() {
+			p, err := cli.NewParser(&opt, ll())
+			Ω(err).ShouldNot(HaveOccurred())
+
+			Ω(p.Next()).Should(BeFalse())
+		})
+
+		It("Works with just global options", func() {
+			p, err := cli.NewParser(&opt, ll("--insecure", "-t", "my-target"))
+			Ω(err).ShouldNot(HaveOccurred())
+
+			Ω(p.Next()).Should(BeFalse())
+			Ω(opt.Help).Should(BeFalse())
+			Ω(opt.Insecure).Should(BeTrue())
+			Ω(opt.Target).Should(Equal("my-target"))
+			Ω(opt.Sub.Host).Should(Equal(""))
+		})
+
+		It("Works with a single sub-command", func() {
+			p, err := cli.NewParser(&opt, ll("--insecure", "-t", "my-target", "sub"))
+			Ω(err).ShouldNot(HaveOccurred())
+
+			Ω(opt.Help).Should(BeFalse())
+			Ω(opt.Insecure).Should(BeTrue())
+			Ω(opt.Target).Should(Equal("my-target"))
+
+			Ω(p.Next()).Should(BeTrue())
+			Ω(p.Command).Should(Equal("sub"))
+			Ω(opt.Sub.Host).Should(Equal(""))
+
+			Ω(p.Next()).Should(BeFalse())
+		})
+
+		It("Works with two sub-commands", func() {
+			p, err := cli.NewParser(&opt, ll("--insecure", "-t", "my-target", "list", "--", "sub"))
+			Ω(err).ShouldNot(HaveOccurred())
+
+			Ω(opt.Help).Should(BeFalse())
+			Ω(opt.Insecure).Should(BeTrue())
+			Ω(opt.Target).Should(Equal("my-target"))
+
+			Ω(p.Next()).Should(BeTrue())
+			Ω(p.Command).Should(Equal("list"))
+
+			Ω(p.Next()).Should(BeTrue())
+			Ω(p.Command).Should(Equal("sub"))
+			Ω(opt.Sub.Host).Should(Equal(""))
+
+			Ω(p.Next()).Should(BeFalse())
+		})
+
+		It("Keeps sub-command arguments separate", func() {
+			p, err := cli.NewParser(&opt, ll("--insecure", "-t", "my-target", "sub", "--host", "prod", "--", "sub", "-H", "dev"))
+			Ω(err).ShouldNot(HaveOccurred())
+
+			Ω(opt.Help).Should(BeFalse())
+			Ω(opt.Insecure).Should(BeTrue())
+			Ω(opt.Target).Should(Equal("my-target"))
+
+			Ω(p.Next()).Should(BeTrue())
+			Ω(p.Command).Should(Equal("sub"))
+			Ω(opt.Sub.Host).Should(Equal("prod"))
+
+			Ω(p.Next()).Should(BeTrue())
+			Ω(p.Command).Should(Equal("sub"))
+			Ω(opt.Sub.Host).Should(Equal("dev"))
+
+			Ω(p.Next()).Should(BeFalse())
+		})
+
+		It("Allows global option overrides on a per sub-command basis", func() {
+			p, err := cli.NewParser(&opt, ll("-k", "-t", "x", "sub", "--target", "my-target", "--", "sub", "-k"))
+			Ω(err).ShouldNot(HaveOccurred())
+
+			Ω(opt.Help).Should(BeFalse())
+			Ω(opt.Insecure).Should(BeTrue())
+			Ω(opt.Target).Should(Equal("x"))
+
+			Ω(p.Next()).Should(BeTrue())
+			Ω(p.Command).Should(Equal("sub"))
+			Ω(opt.Target).Should(Equal("my-target"))
+			Ω(opt.Sub.Host).Should(Equal(""))
+
+			Ω(p.Next()).Should(BeTrue())
+			Ω(p.Command).Should(Equal("sub"))
+			Ω(opt.Target).Should(Equal("x"))
+			Ω(opt.Sub.Host).Should(Equal(""))
+
+			Ω(p.Next()).Should(BeFalse())
+		})
+	})
+
+	// }}}
+	Describe("Unchained -- behavior", func() { // {{{
+		var opt = struct {
+			Help  bool `cli:"-h, -?, --help"`
+			Debug bool `cli:"-D, --debug"`
+
+			Merge struct {
+				Prune string `cli:"-d, --prune"`
+			} `cli:"merge"`
+		}{}
+
+		It("Concatenates arguments after -- with positionals before it", func() {
+			cmd, leftover, err = cli.ParseArgs(&opt, ll("merge", "a.yml", "-D", "--prune", "x.y.z", "--", "--dash.yml"))
+			Ω(err).ShouldNot(HaveOccurred())
+			Ω(cmd).Should(Equal("merge"))
+
+			Ω(opt.Debug).Should(BeTrue())
+			Ω(opt.Merge.Prune).Should(Equal("x.y.z"))
+
+			Ω(len(leftover)).Should(Equal(2))
+			Ω(leftover[0]).Should(Equal("a.yml"))
+			Ω(leftover[1]).Should(Equal("--dash.yml"))
 		})
 	})
 

@@ -15,7 +15,7 @@ func reflectOnIt(thing interface{}) (context, error) {
 		t = v.Type()
 	}
 
-	c := context {
+	c := context{
 		Options: make([]option, 0),
 		Subs:    make(map[string]context),
 	}
@@ -48,7 +48,7 @@ func reflectSomeMore(c context, t reflect.Type, v *reflect.Value) (context, erro
 			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
 			reflect.Float32, reflect.Float64:
 
-			vfield := v.Field(i);
+			vfield := v.Field(i)
 			o, err := newOption(field.Type.Kind(), &vfield, tag)
 			if err != nil {
 				return c, err
@@ -58,7 +58,7 @@ func reflectSomeMore(c context, t reflect.Type, v *reflect.Value) (context, erro
 
 		case reflect.Struct:
 			vfield := v.Field(i)
-			sub := context {
+			sub := context{
 				Options: make([]option, 0),
 				Subs:    make(map[string]context),
 			}
@@ -83,13 +83,13 @@ func newOption(kind reflect.Kind, value *reflect.Value, tag string) (option, err
 	long := regexp.MustCompile("^--([a-zA-Z0-9?][a-zA-Z0-9?-]+)$")
 
 	o := option{
-		Kind: kind,
-		Value: value,
+		Kind:   kind,
+		Value:  value,
 		Shorts: "",
-		Longs: make([]string, 0),
+		Longs:  make([]string, 0),
 	}
 
-	seen := make(map[string] bool) /* to de-dupe inside the tag spec */
+	seen := make(map[string]bool) /* to de-dupe inside the tag spec */
 	for _, opt := range splitter.Split(tag, -1) {
 		if m := short.FindStringSubmatch(opt); m != nil {
 			if _, ok := seen[m[1]]; !ok {

@@ -3,15 +3,16 @@ package cli
 import (
 	"fmt"
 	"reflect"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 type option struct {
-	Kind   reflect.Kind
-	Value  *reflect.Value
-	Shorts string
-	Longs  []string
+	Kind    reflect.Kind
+	Value   *reflect.Value
+	Default *string
+	Shorts  string
+	Longs   []string
 }
 
 type context struct {
@@ -63,14 +64,14 @@ func (c context) findShort(subs []string, name string) (option, error) {
 	return option{}, fmt.Errorf("unrecognized sub-command `%s`", subs[0])
 }
 
-func (o option) enable() {
-	o.Value.Set(reflect.ValueOf(true))
+func (o option) enable(on bool) {
+	o.Value.Set(reflect.ValueOf(on))
 }
 
 func (o option) set(raw string) error {
 	var (
 		err error
-		v interface{}
+		v   interface{}
 	)
 
 	switch o.Kind {
