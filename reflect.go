@@ -25,10 +25,10 @@ func reflectOnIt(thing interface{}) (context, error) {
 func reflectSomeMore(c context, t reflect.Type, v *reflect.Value) (context, error) {
 
 	if t.Kind() != reflect.Struct {
-		return c, fmt.Errorf("cli.Parse() only operates on structures")
+		return c, fmt.Errorf("go-cli only operates on structures")
 	}
 	if !v.CanSet() {
-		return c, fmt.Errorf("cli.Parse() requires a writable structure")
+		return c, fmt.Errorf("go-cli requires a writable structure")
 	}
 
 	for i := 0; i < t.NumField(); i++ {
@@ -76,7 +76,7 @@ func reflectSomeMore(c context, t reflect.Type, v *reflect.Value) (context, erro
 			break
 
 		default:
-			return c, fmt.Errorf("cli.Parse() cannot operate on this type of thing")
+			return c, fmt.Errorf("go-cli cannot operate on this type of thing")
 		}
 	}
 
