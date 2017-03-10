@@ -485,6 +485,25 @@ var _ = Describe("CLI", func() {
 		})
 
 		Context("With overridden default values", func() {
+			var opt = struct {
+				Type string `cli:"-t, --type"`
+			}{}
+
+			BeforeEach(func() {
+				opt.Type = "normal"
+			})
+
+			It("Provides the default if no option is given", func() {
+				_, _, err = cli.ParseArgs(&opt, ll())
+				Ω(err).ShouldNot(HaveOccurred())
+				Ω(opt.Type).Should(Equal("normal"))
+			})
+
+			It("Overrides the default if an option is given", func() {
+				_, _, err = cli.ParseArgs(&opt, ll("--type", "extra-special"))
+				Ω(err).ShouldNot(HaveOccurred())
+				Ω(opt.Type).Should(Equal("extra-special"))
+			})
 		})
 	})
 
