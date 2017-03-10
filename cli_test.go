@@ -742,6 +742,85 @@ var _ = Describe("CLI", func() {
 	})
 
 	// }}}
+	Describe("Simple List Flags", func() { // {{{
+		Context("With go-supplied default values", func() {
+			var opt = struct {
+				List []string `cli:"--list"`
+			}{}
+
+			BeforeEach(func() {
+				/* we have to initialize to make reflect happy... */
+				opt.List = make([]string, 0)
+			})
+
+			It("Leaves defaults intact", func() {
+				cmd, leftover, err = cli.ParseArgs(&opt, ll())
+				Ω(cmd).Should(Equal(""))
+				Ω(leftover).Should(BeEmpty())
+				Ω(err).ShouldNot(HaveOccurred())
+
+				Ω(opt.List).Should(BeEmpty())
+			})
+
+			It("Handles a single argument", func() {
+				cmd, leftover, err = cli.ParseArgs(&opt, ll("--list", "a"))
+				Ω(cmd).Should(Equal(""))
+				Ω(leftover).Should(BeEmpty())
+				Ω(err).ShouldNot(HaveOccurred())
+
+				Ω(opt.List).ShouldNot(BeEmpty())
+				Ω(len(opt.List)).Should(Equal(1))
+				Ω(opt.List[0]).Should(Equal("a"))
+			})
+
+			It("Handles multiple arguments", func() {
+				cmd, leftover, err = cli.ParseArgs(&opt, ll("--list", "a", "--list", "b", "--list", "c"))
+				Ω(cmd).Should(Equal(""))
+				Ω(leftover).Should(BeEmpty())
+				Ω(err).ShouldNot(HaveOccurred())
+
+				Ω(opt.List).ShouldNot(BeEmpty())
+				Ω(len(opt.List)).Should(Equal(3))
+				Ω(opt.List[0]).Should(Equal("a"))
+				Ω(opt.List[1]).Should(Equal("b"))
+				Ω(opt.List[2]).Should(Equal("c"))
+			})
+		})
+
+		Context("With overridden default values", func() {
+			var opt = struct {
+				List []int `cli:"-N, --numbers"`
+			} {}
+
+			BeforeEach(func() {
+				opt.List = []int{4, 8, 15, 16}
+			})
+
+			It("Uses the default list if no options are given", func() {
+				_, _, err = cli.ParseArgs(&opt, ll())
+				Ω(err).ShouldNot(HaveOccurred())
+
+				Ω(opt.List).ShouldNot(BeEmpty())
+				Ω(len(opt.List)).Should(Equal(4))
+				Ω(opt.List[0]).Should(Equal(4))
+				Ω(opt.List[1]).Should(Equal(8))
+				Ω(opt.List[2]).Should(Equal(15))
+				Ω(opt.List[3]).Should(Equal(16))
+			})
+
+			It("Replaces the default list if options are given", func() {
+				_, _, err = cli.ParseArgs(&opt, ll("-N", "23", "-N", "42"))
+				Ω(err).ShouldNot(HaveOccurred())
+
+				Ω(opt.List).ShouldNot(BeEmpty())
+				Ω(len(opt.List)).Should(Equal(2))
+				Ω(opt.List[0]).Should(Equal(23))
+				Ω(opt.List[1]).Should(Equal(42))
+			})
+		})
+	})
+
+	// }}}
 	Describe("Sub-commands", func() { // {{{
 		var opt = struct {
 			Help    bool   `cli:"-h, -?, --help"`
@@ -1074,15 +1153,6 @@ var _ = Describe("CLI", func() {
 			It("Fails to work with an interface field", func() {
 				var opt = struct {
 					Bad interface{} `cli:"--interface"`
-				}{}
-				_, _, err = cli.ParseArgs(&opt, ll())
-				Ω(err).Should(HaveOccurred())
-				Ω(err.Error()).Should(MatchRegexp("cannot operate on this type"))
-			})
-
-			It("Fails to work with a slice field", func() {
-				var opt = struct {
-					Bad []string `cli:"--strings"`
 				}{}
 				_, _, err = cli.ParseArgs(&opt, ll())
 				Ω(err).Should(HaveOccurred())
