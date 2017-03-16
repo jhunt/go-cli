@@ -261,3 +261,4 @@ than nothin')
 
 Happy Hacking!
 
+[issues]: https://github.com/jhunt/go-cli/issues
