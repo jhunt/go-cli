@@ -248,7 +248,7 @@ Contributing
 
 This code is licensed MIT.  Enjoy.
 
-If you find a bug, please raise a [Github Issue][issues] first,
+If you find a bug, please raise a [Github Issue](https://github.com/jhunt/go-cli/issues) first,
 before submitting a PR.
 
 When you do work up a patch, keep in mind that we have a fairly
