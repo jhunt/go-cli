@@ -1392,4 +1392,36 @@ var _ = Describe("CLI", func() {
 	})
 
 	// }}}
+	Describe("Full-stop behavior", func() { // {{{
+		var opt = struct {
+			Help  bool `cli:"-h, -?, --help"`
+			Debug bool `cli:"-D, --debug"`
+
+			FullStop struct {
+			} `cli:"stop!"`
+		}{}
+
+		It("Treats non-options after 'stop' as arguments", func() {
+			cmd, leftover, err := cli.ParseArgs(&opt, ll("-D", "stop", "all"))
+			Ω(err).ShouldNot(HaveOccurred())
+			Ω(cmd).Should(Equal("stop"))
+
+			Ω(opt.Debug).Should(BeTrue())
+			Ω(len(leftover)).Should(Equal(1))
+			Ω(leftover[0]).Should(Equal("all"))
+		})
+
+		It("Treats options after 'stop' as arguments", func() {
+			cmd, leftover, err := cli.ParseArgs(&opt, ll("-D", "stop", "--hard", "all"))
+			Ω(err).ShouldNot(HaveOccurred())
+			Ω(cmd).Should(Equal("stop"))
+
+			Ω(opt.Debug).Should(BeTrue())
+			Ω(len(leftover)).Should(Equal(2))
+			Ω(leftover[0]).Should(Equal("--hard"))
+			Ω(leftover[1]).Should(Equal("all"))
+		})
+	})
+
+	// }}}
 })
