@@ -179,7 +179,7 @@ type Opt struct {
   } `cli:"list"`
 
   Exec struct {
-  } `cli:"exec"`
+  } `cli:"exec!"`
 }
 ```
 
