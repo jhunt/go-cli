@@ -257,9 +257,10 @@ var _ = Describe("CLI", func() {
 	Describe("Simple Boolean Flags", func() { // {{{
 		Context("With go-supplied default values", func() {
 			var opt = struct {
-				Short bool `cli:"-s"`
-				Long  bool `cli:"--long"`
-				Both  bool `cli:"-b, --both"`
+				Short bool  `cli:"-s"`
+				Long  bool  `cli:"--long"`
+				Both  bool  `cli:"-b, --both"`
+				Maybe *bool `cli:"--maybe, --no-maybe"`
 			}{}
 
 			BeforeEach(func() {
@@ -268,6 +269,7 @@ var _ = Describe("CLI", func() {
 				opt.Short = flag
 				opt.Long = flag
 				opt.Both = flag
+				opt.Maybe = nil
 			})
 
 			It("Leaves defaults intact", func() {
@@ -279,6 +281,7 @@ var _ = Describe("CLI", func() {
 				Ω(opt.Short).Should(BeFalse())
 				Ω(opt.Long).Should(BeFalse())
 				Ω(opt.Both).Should(BeFalse())
+				Ω(opt.Maybe).Should(BeNil())
 			})
 
 			It("Overrides defaults for provided flags", func() {
@@ -291,6 +294,7 @@ var _ = Describe("CLI", func() {
 
 				Ω(opt.Short).Should(BeTrue())
 				Ω(opt.Long).Should(BeTrue())
+				Ω(opt.Maybe).Should(BeNil())
 			})
 
 			It("Allows repeat flags", func() {
@@ -303,6 +307,7 @@ var _ = Describe("CLI", func() {
 
 				Ω(opt.Short).Should(BeTrue())
 				Ω(opt.Long).Should(BeTrue())
+				Ω(opt.Maybe).Should(BeNil())
 			})
 
 			It("Handles flags after positional arguments", func() {
@@ -315,6 +320,7 @@ var _ = Describe("CLI", func() {
 
 				Ω(opt.Short).Should(BeTrue())
 				Ω(opt.Long).Should(BeTrue())
+				Ω(opt.Maybe).Should(BeNil())
 			})
 
 			It("Sets a mixed option field for the short flag", func() {
@@ -327,6 +333,7 @@ var _ = Describe("CLI", func() {
 				Ω(opt.Long).Should(BeFalse())
 
 				Ω(opt.Both).Should(BeTrue())
+				Ω(opt.Maybe).Should(BeNil())
 			})
 
 			It("Sets a mixed option field for the long flag", func() {
@@ -339,6 +346,7 @@ var _ = Describe("CLI", func() {
 				Ω(opt.Long).Should(BeFalse())
 
 				Ω(opt.Both).Should(BeTrue())
+				Ω(opt.Maybe).Should(BeNil())
 			})
 
 			It("Handles bundled short options", func() {
@@ -351,6 +359,35 @@ var _ = Describe("CLI", func() {
 
 				Ω(opt.Short).Should(BeTrue())
 				Ω(opt.Both).Should(BeTrue())
+				Ω(opt.Maybe).Should(BeNil())
+			})
+
+			It("Handles pointer booleans in the affirmative", func() {
+				cmd, leftover, err = cli.ParseArgs(&opt, ll("--maybe"))
+				Ω(cmd).Should(Equal(""))
+				Ω(leftover).Should(BeEmpty())
+				Ω(err).ShouldNot(HaveOccurred())
+
+				Ω(opt.Maybe).ShouldNot(BeNil())
+				Ω(*opt.Maybe).Should(BeTrue())
+
+				Ω(opt.Short).Should(BeFalse())
+				Ω(opt.Long).Should(BeFalse())
+				Ω(opt.Both).Should(BeFalse())
+			})
+
+			It("Handles pointer booleans in the negative", func() {
+				cmd, leftover, err = cli.ParseArgs(&opt, ll("--no-maybe"))
+				Ω(cmd).Should(Equal(""))
+				Ω(leftover).Should(BeEmpty())
+				Ω(err).ShouldNot(HaveOccurred())
+
+				Ω(opt.Maybe).ShouldNot(BeNil())
+				Ω(*opt.Maybe).Should(BeFalse())
+
+				Ω(opt.Short).Should(BeFalse())
+				Ω(opt.Long).Should(BeFalse())
+				Ω(opt.Both).Should(BeFalse())
 			})
 		})
 
@@ -790,7 +827,7 @@ var _ = Describe("CLI", func() {
 		Context("With overridden default values", func() {
 			var opt = struct {
 				List []int `cli:"-N, --numbers"`
-			} {}
+			}{}
 
 			BeforeEach(func() {
 				opt.List = []int{4, 8, 15, 16}
@@ -1153,6 +1190,24 @@ var _ = Describe("CLI", func() {
 			It("Fails to work with an interface field", func() {
 				var opt = struct {
 					Bad interface{} `cli:"--interface"`
+				}{}
+				_, _, err = cli.ParseArgs(&opt, ll())
+				Ω(err).Should(HaveOccurred())
+				Ω(err.Error()).Should(MatchRegexp("cannot operate on this type"))
+			})
+
+			It("Fails to work with a pointer-to-string field", func() {
+				var opt = struct {
+					Bad *string `cli:"--p-string"`
+				}{}
+				_, _, err = cli.ParseArgs(&opt, ll())
+				Ω(err).Should(HaveOccurred())
+				Ω(err.Error()).Should(MatchRegexp("cannot operate on this type"))
+			})
+
+			It("Fails to work with a pointer-to-int field", func() {
+				var opt = struct {
+					Bad *int `cli:"--p-int"`
 				}{}
 				_, _, err = cli.ParseArgs(&opt, ll())
 				Ω(err).Should(HaveOccurred())
