@@ -1,0 +1,11 @@
+github.com/jhunt/go-snapshot v0.0.0-20170309042712-92984e0ad8d8 h1:hejiJzi7jtU+jl0SnMozrS81wYkrNSvUGn0NQjVtVoU=
+github.com/jhunt/go-snapshot v0.0.0-20170309042712-92984e0ad8d8/go.mod h1:oNu1YULLxQcu77xYyAN0Xb2YbEspiSwDSn9kPW2zRKU=
+github.com/onsi/ginkgo v1.2.1-0.20170306185959-c27b3c46852f h1:6mrp8I0KQvgSs032xlFqqCBXSPgB4NuamEji1Xb7rMI=
+github.com/onsi/ginkgo v1.2.1-0.20170306185959-c27b3c46852f/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
+github.com/onsi/gomega v0.0.0-20170306183512-1de7ab2df910 h1:e48rB73lb92bfc9T3C1Z71djLb8Dp0AYQQCRKf45yhY=
+github.com/onsi/gomega v0.0.0-20170306183512-1de7ab2df910/go.mod h1:C1qb7wdrVGGVU+Z6iS04AVkA3Q65CEZX59MT0QO5uiA=
+golang.org/x/crypto v0.0.0-20170302193244-40541ccb1c6e h1:NapT3cc9O94dSeZp9kkJglkai4KKAY7ff9PcOi6J1ss=
+golang.org/x/crypto v0.0.0-20170302193244-40541ccb1c6e/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
+golang.org/x/sys v0.0.0-20170308153327-99f16d856c98/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
+gopkg.in/yaml.v2 v2.0.0-20170208141851-a3f3340b5840 h1:BftvRMCaj0KX6UeD7gnNJv0W8b4HAYTEWes978CoWlY=
+gopkg.in/yaml.v2 v2.0.0-20170208141851-a3f3340b5840/go.mod h1:JAlM8MvJe8wmxCU4Bli9HhUf9+ttbYbLASfIpnQbh74=
