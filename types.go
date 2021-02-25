@@ -96,7 +96,7 @@ func (o *option) set(raw string) error {
 			v = reflect.Append(*o.Value, v)
 		}
 	} else if o.Kind == reflect.Ptr {
-		v, err = valify(raw, o.Value.Type().Elem().Kind())
+		v, err = valify(raw, o.Type.Elem().Kind())
 	} else {
 		v, err = valify(raw, o.Kind)
 	}
@@ -104,7 +104,12 @@ func (o *option) set(raw string) error {
 		return err
 	}
 
-	o.Value.Set(v)
+	if o.Kind == reflect.Ptr {
+		o.Value.Set(reflect.New(o.Type.Elem()))
+		o.Value.Elem().Set(v)
+	} else {
+		o.Value.Set(v)
+	}
 	return nil
 }
 

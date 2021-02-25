@@ -412,9 +412,10 @@ var _ = Describe("CLI", func() {
 	Describe("Simple String Flags", func() { // {{{
 		Context("With go-supplied default values", func() {
 			var opt = struct {
-				Short string `cli:"-s"`
-				Long  string `cli:"--long"`
-				Both  string `cli:"-b, --both"`
+				Short string  `cli:"-s"`
+				Long  string  `cli:"--long"`
+				Both  string  `cli:"-b, --both"`
+				Maybe *string `cli:"--maybe"`
 			}{}
 
 			BeforeEach(func() {
@@ -423,6 +424,7 @@ var _ = Describe("CLI", func() {
 				opt.Short = flag
 				opt.Long = flag
 				opt.Both = flag
+				opt.Maybe = nil
 			})
 
 			It("Leaves defaults intact", func() {
@@ -434,6 +436,7 @@ var _ = Describe("CLI", func() {
 				Ω(opt.Short).Should(Equal(""))
 				Ω(opt.Long).Should(Equal(""))
 				Ω(opt.Both).Should(Equal(""))
+				Ω(opt.Maybe).Should(BeNil())
 			})
 
 			It("Overrides defaults for provided flags", func() {
@@ -443,6 +446,7 @@ var _ = Describe("CLI", func() {
 				Ω(err).ShouldNot(HaveOccurred())
 
 				Ω(opt.Both).Should(Equal(""))
+				Ω(opt.Maybe).Should(BeNil())
 
 				Ω(opt.Short).Should(Equal("change"))
 				Ω(opt.Long).Should(Equal("override"))
@@ -455,6 +459,7 @@ var _ = Describe("CLI", func() {
 				Ω(err).ShouldNot(HaveOccurred())
 
 				Ω(opt.Both).Should(Equal(""))
+				Ω(opt.Maybe).Should(BeNil())
 
 				Ω(opt.Short).Should(Equal("D"))
 				Ω(opt.Long).Should(Equal("B"))
@@ -467,6 +472,7 @@ var _ = Describe("CLI", func() {
 				Ω(err).ShouldNot(HaveOccurred())
 
 				Ω(opt.Both).Should(Equal(""))
+				Ω(opt.Maybe).Should(BeNil())
 
 				Ω(opt.Short).Should(Equal("of course"))
 				Ω(opt.Long).Should(Equal("why not"))
@@ -492,6 +498,7 @@ var _ = Describe("CLI", func() {
 
 				Ω(opt.Short).Should(Equal(""))
 				Ω(opt.Long).Should(Equal(""))
+				Ω(opt.Maybe).Should(BeNil())
 
 				Ω(opt.Both).Should(Equal("yes"))
 			})
@@ -503,6 +510,7 @@ var _ = Describe("CLI", func() {
 				Ω(err).ShouldNot(HaveOccurred())
 
 				Ω(opt.Long).Should(Equal(""))
+				Ω(opt.Maybe).Should(BeNil())
 
 				Ω(opt.Short).Should(Equal("bundled"))
 				Ω(opt.Both).Should(Equal("yes"))
@@ -518,6 +526,20 @@ var _ = Describe("CLI", func() {
 				cmd, leftover, err = cli.ParseArgs(&opt, ll("--long"))
 				Ω(err).Should(HaveOccurred())
 				Ω(err.Error()).Should(MatchRegexp("required .*--long"))
+			})
+
+			It("Handles pointer strings appropriately", func() {
+				cmd, leftover, err := cli.ParseArgs(&opt, ll("--maybe", "something there"))
+				Ω(cmd).Should(Equal(""))
+				Ω(leftover).Should(BeEmpty())
+				Ω(err).ShouldNot(HaveOccurred())
+
+				Ω(opt.Long).Should(Equal(""))
+				Ω(opt.Short).Should(Equal(""))
+				Ω(opt.Both).Should(Equal(""))
+				Ω(opt.Maybe).ShouldNot(BeNil())
+
+				Ω(*opt.Maybe).Should(Equal("something there"))
 			})
 		})
 
@@ -1190,15 +1212,6 @@ var _ = Describe("CLI", func() {
 			It("Fails to work with an interface field", func() {
 				var opt = struct {
 					Bad interface{} `cli:"--interface"`
-				}{}
-				_, _, err = cli.ParseArgs(&opt, ll())
-				Ω(err).Should(HaveOccurred())
-				Ω(err.Error()).Should(MatchRegexp("cannot operate on this type"))
-			})
-
-			It("Fails to work with a pointer-to-string field", func() {
-				var opt = struct {
-					Bad *string `cli:"--p-string"`
 				}{}
 				_, _, err = cli.ParseArgs(&opt, ll())
 				Ω(err).Should(HaveOccurred())

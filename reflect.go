@@ -76,6 +76,14 @@ func reflectSomeMore(c context, t reflect.Type, v *reflect.Value) (context, erro
 					return c, err
 				}
 				c.Options = append(c.Options, o)
+
+			} else if t.Elem().Kind() == reflect.String {
+				o, err := newOption(t, t.Kind(), &v, tag)
+				if err != nil {
+					return c, err
+				}
+				c.Options = append(c.Options, o)
+
 			} else {
 				return c, fmt.Errorf("go-cli cannot operate on this type of thing")
 			}
